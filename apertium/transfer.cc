@@ -22,6 +22,7 @@
 #include <apertium/string_utils.h>
 #include <lttoolbox/compression.h>
 #include <lttoolbox/xml_parse_util.h>
+#include <pcre.h>
 
 #include <cctype>
 #include <iostream>
@@ -110,10 +111,18 @@ Transfer::readData(FILE *in)
   me = new MatchExe(t, finals);
  
   // attr_items
+  wstring input_pcre_version = Compression::wstring_read(in);
+  string version_tmp = string(pcre_version());
+  wstring current_pcre_version = wstring(version_tmp.begin(),version_tmp.end());
+  bool recompile_attrs = input_pcre_version != current_pcre_version;
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
     string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
     attr_items[cad_k].read(in);
+    wstring fallback = Compression::wstring_read(in);
+    if(recompile_attrs) {
+      attr_items[cad_k].compile(UtfConverter::toUtf8(fallback));
+    }
   }
 
   // variables

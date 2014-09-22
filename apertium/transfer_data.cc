@@ -180,6 +180,9 @@ TransferData::write(FILE *output)
 void
 TransferData::writeRegexps(FILE *output)
 {
+  string version_tmp = string(pcre_version());
+  Compression::wstring_write(wstring(version_tmp.begin(),version_tmp.end()),
+                             output);
   Compression::multibyte_write(attr_items.size(), output);
   
   map<wstring, wstring, Ltstr>::iterator it, limit;
@@ -190,5 +193,6 @@ TransferData::writeRegexps(FILE *output)
     //wcerr << it->second << endl;
     my_re.compile(UtfConverter::toUtf8(it->second));
     my_re.write(output);
+    Compression::wstring_write(it->second, output);
   }   
 }
