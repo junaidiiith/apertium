@@ -373,16 +373,9 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
-apertium-gen-modes: Makefile.am modes-header.sh
+apertium-gen-modes: apertium-gen-modes.in
 	@echo "Creating apertium-gen-modes script"
-	@echo "#!$(BASH)" > $@
-	@echo "APERTIUMDIR="$(apertiumdir) >> $@
-	@cat modes-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/modes.dtd --noout \$$FILE1 && \\" >> $@
-	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
-	  then echo "$(XSLTPROC) --stringparam prefix $(prefix)/bin --stringparam dataprefix \$$FULLDIRNAME  $(apertiumdir)/modes2bash.xsl \$$FILE1 | awk -f $(apertiumdir)/apertium-createmodes.awk PARAM=\$$FULLDIRNAME"; \
-          else echo "$(XSLTPROC) $(apertiumdir)/modes2bash.xsl \$$FILE1 \\\$$prefix=$(prefix)/bin \\\$$dataprefix=\$$FULLDIRNAME| awk -f $(apertiumdir)/apertium-createmodes.awk PARAM=\$$FULLDIRNAME"; \
-          fi >> $@ 
+	@sed -e "s%@apertiumdir@%$(apertiumdir)%" $< > $@
 	@chmod a+x $@
 
 apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
