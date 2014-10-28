@@ -6,6 +6,7 @@ BEGIN {
 
 NF==2 && /\.mode$/ {
   filename = $2
+  printf ""  > filename
   next
 }
 
